@@ -18,18 +18,21 @@ fn setup(
 ) {
     // Rotation to mimic a rotated world.
     let rotate = Transform::from_rotation(Quat::from_rotation_x(90.0f32.to_radians()));
+
     // Ground
     commands.spawn((
         Mesh3d(meshes.add(Plane3d::default().mesh().size(5.0, 5.0))),
         MeshMaterial3d(materials.add(Color::srgb(0.3, 0.5, 0.3))),
         rotate,
     ));
+
     // Cube
     commands.spawn((
         Mesh3d(meshes.add(Cuboid::new(1.0, 1.0, 1.0))),
         MeshMaterial3d(materials.add(Color::srgb(0.8, 0.7, 0.6))),
         rotate * Transform::from_xyz(0.0, 0.5, 0.0),
     ));
+
     // Light
     commands.spawn((
         PointLight {
@@ -38,12 +41,15 @@ fn setup(
         },
         rotate * Transform::from_xyz(4.0, 8.0, 4.0),
     ));
-    // Camera
+
+    // Actual orbiting camera
     // Swaps the axis of the camera to use Z as up instead of Y as up which is the default.
+    // Also allows upside down which means that you are allowed to move the camera below the default plane (e.g. like if you want to render the earth and want to allow to see if from below).
     let swapped_axis = [Vec3::X, Vec3::Z, Vec3::Y];
     let camera = PanOrbitCamera {
         axis: swapped_axis,
         pitch: Some(-45f32.to_radians()),
+        allow_upside_down: true,
         ..default()
     };
     commands.spawn((Transform::from_xyz(0.0, 1.5, 5.0), camera));
